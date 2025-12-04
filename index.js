@@ -37,7 +37,7 @@ async function run() {
 
         const database = client.db('listings')
         const listings = database.collection('pet-listings')
-
+        
         app.post('/listings', async (req, res) => {
             const data = req.body;
             const result = await listings.insertOne(data)
@@ -47,10 +47,41 @@ async function run() {
             const result = await listings.find().toArray()
             res.send(result)
         })
+        app.get('/listings/product/:id', async (req, res) => {
+            const {id} = req.params
+            const query = {_id: new ObjectId(id)}
+            const result = await listings.findOne(query)
+            res.send(result)
+        })
+        app.get('/listings/myListings/:email', async (req, res) => {
+            const { email } = req.params
+            const query = { email: email }
+            const result = await listings.find(query).toArray()
+            res.send(result)
+        })
         app.get('/listings/:category', async (req, res) => {
             const { category } = req.params
             const query = { category: category }
             const result = await listings.find(query).toArray()
+            res.send(result)
+        })
+        
+        const database2 = client.db('orders')
+        const orders = database2.collection('product-orders')
+        
+        app.post('/orders', async (req, res) => {
+            const data = req.body;
+            const result = await orders.insertOne(data)
+            res.send(result)
+        })
+        app.get('/orders', async (req, res) => {
+            const result = await orders.find().toArray()
+            res.send(result)
+        })
+        app.get('/orders/:email', async (req, res) => {
+            const { email } = req.params
+            const query = { buyerEmail: email }
+            const result = await orders.find(query).toArray()
             res.send(result)
         })
 
