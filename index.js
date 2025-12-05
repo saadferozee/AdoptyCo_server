@@ -37,7 +37,7 @@ async function run() {
 
         const database = client.db('listings')
         const listings = database.collection('pet-listings')
-        
+
         app.post('/listings', async (req, res) => {
             const data = req.body;
             const result = await listings.insertOne(data)
@@ -48,8 +48,8 @@ async function run() {
             res.send(result)
         })
         app.get('/listings/product/:id', async (req, res) => {
-            const {id} = req.params
-            const query = {_id: new ObjectId(id)}
+            const { id } = req.params
+            const query = { _id: new ObjectId(id) }
             const result = await listings.findOne(query)
             res.send(result)
         })
@@ -65,16 +65,26 @@ async function run() {
             const result = await listings.find(query).toArray()
             res.send(result)
         })
+        app.put('/listings/update/:id', async (req, res) => {
+            const data = req.body
+            const { id } = req.params
+            const query = { _id: new ObjectId(id) }
+            const updatedProductDetails = {
+                $set: data
+            }
+            const result = await listings.updateOne(query, updatedProductDetails)
+            res.send(result)
+        })
         app.delete('/listings/delete/:id', async (req, res) => {
-            const id = req.params
+            const { id } = req.params
             const query = { _id: new ObjectId(id) }
             const result = await listings.deleteOne(query)
             res.send(result)
         })
-        
+
         const database2 = client.db('orders')
         const orders = database2.collection('product-orders')
-        
+
         app.post('/orders', async (req, res) => {
             const data = req.body;
             const result = await orders.insertOne(data)
