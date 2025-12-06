@@ -7,7 +7,7 @@ const app = express()
 app.use(cors({
     origin: [
         "http://localhost:5173",
-        "https://adoptyco.netlify.app"
+        "https://adoption-web-by-saadferozee.web.app"
     ],
     credentials: true
 })); 
