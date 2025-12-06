@@ -1,10 +1,16 @@
+require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
-require('dotenv').config()
 const port = process.env.PORT || 3568
 
 const app = express()
-app.use(cors())
+app.use(cors({
+    origin: [
+        "http://localhost:5173",
+        "https://adoptyco.netlify.app"
+    ],
+    credentials: true
+})); 
 app.use(express.json())
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -28,7 +34,7 @@ async function run() {
     try {
 
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         // here is my code
         app.get('/', (req, res) => {
@@ -47,6 +53,10 @@ async function run() {
             const result = await listings.find().toArray()
             res.send(result)
         })
+        app.get('/listings/recentListings', async (req, res) => {
+            const result = await listings.find().sort({ _id: -1 }).limit(6).toArray()
+            res.send(result.reverse())
+        })
         app.get('/listings/product/:id', async (req, res) => {
             const { id } = req.params
             const query = { _id: new ObjectId(id) }
@@ -59,7 +69,7 @@ async function run() {
             const result = await listings.find(query).toArray()
             res.send(result)
         })
-        app.get('/listings/:category', async (req, res) => {
+        app.get('/listings/category/:category', async (req, res) => {
             const { category } = req.params
             const query = { category: category }
             const result = await listings.find(query).toArray()
@@ -104,7 +114,7 @@ async function run() {
         // my code end here
 
         // Send a ping to confirm a successful connection
-        await client.db("admin").command({ ping: 1 });
+        // await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
     } finally {
