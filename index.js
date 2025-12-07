@@ -55,7 +55,7 @@ async function run() {
         })
         app.get('/listings/recentListings', async (req, res) => {
             const result = await listings.find().sort({ _id: -1 }).limit(6).toArray()
-            res.send(result.reverse())
+            res.send(result)
         })
         app.get('/listings/product/:id', async (req, res) => {
             const { id } = req.params
