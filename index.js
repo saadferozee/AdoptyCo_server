@@ -10,7 +10,7 @@ app.use(cors({
         "https://adoption-web-by-saadferozee.web.app"
     ],
     credentials: true
-})); 
+}));
 app.use(express.json())
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
@@ -39,6 +39,28 @@ async function run() {
         // here is my code
         app.get('/', (req, res) => {
             res.send('hello from my database.')
+        })
+
+        const database0 = client.db('users')
+        const users = database0.collection('user-list')
+
+        app.post('/add-user', async (req, res) => {
+            const user = req.body
+            const result = await users.insertOne(user)
+            res.send(result)
+        })
+        app.get('/users/user/:email', async (req, res) => {
+            const { email } = req.params
+            const query = { email: email }
+            const result = await users.findOne(query)
+            if (!result) {
+                return res.send(false);
+            }
+            res.send(result.email === email || false)
+        })
+        app.get('/users', async (req, res) => {
+            const result = await users.find().toArray()
+            res.send(result)
         })
 
         const database = client.db('listings')
