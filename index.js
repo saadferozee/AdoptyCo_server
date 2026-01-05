@@ -49,6 +49,10 @@ async function run() {
             const result = await users.insertOne(user)
             res.send(result)
         })
+        app.get('/users', async (req, res) => {
+            const result = await users.find().toArray()
+            res.send(result)
+        })
         app.get('/users/user/:email', async (req, res) => {
             const { email } = req.params
             const query = { email: email }
@@ -58,9 +62,14 @@ async function run() {
             }
             res.send(result.email === email || false)
         })
-        app.get('/users', async (req, res) => {
-            const result = await users.find().toArray()
-            res.send(result)
+        app.get('/users/info', async (req, res) => {
+            const { email } = req.query
+            const query = { email: email }
+            const result = await users.findOne(query)
+            if (!result) {
+                return res.send(false);
+            }
+            res.send({ role: result.role })
         })
 
         const database = client.db('listings')
